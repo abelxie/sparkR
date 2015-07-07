@@ -483,6 +483,8 @@ setGeneric("registerTempTable", function(x, tableName) { standardGeneric("regist
 # @exportMethod sample
 setGeneric("sample", function(x, withReplacement, fraction, seed) { standardGeneric("sample") })
 
+#' @exportMethod Filter
+setGeneric('Filter')
 
 #' @rdname sample
 #' @exportMethod sample_frac
