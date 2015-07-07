@@ -9,7 +9,7 @@ Imports:
     methods
 Depends:
     R (>= 3.0),
-    methods,
+    methods
 Suggests:
     testthat
 Description: R frontend for Spark

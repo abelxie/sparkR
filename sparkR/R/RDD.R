@@ -19,16 +19,17 @@
 
 setOldClass("jobj")
 
-# @title S4 class that represents an RDD
-# @description RDD can be created using functions like
-#              \code{parallelize}, \code{textFile} etc.
-# @rdname RDD
-# @seealso parallelize, textFile
-#
-# @slot env An R environment that stores bookkeeping states of the RDD
-# @slot jrdd Java object reference to the backing JavaRDD
-# to an RDD
-# @export
+#' @title S4 class that represents an RDD
+#' @description RDD can be created using functions like
+#'              \code{parallelize}, \code{textFile} etc.
+#' @rdname RDD
+#' @seealso parallelize, textFile
+#'
+#' @slot env An R environment that stores bookkeeping states of the RDD
+#' @slot jrdd Java object reference to the backing JavaRDD
+#'          to an RDD
+#' @export RDD
+#' @exportClass RDD
 setClass("RDD",
          slots = list(env = "environment",
                       jrdd = "jobj"))
@@ -108,30 +109,42 @@ setMethod("initialize", "PipelinedRDD", function(.Object, prev, func, jrdd_val) 
   .Object
 })
 
-# @rdname RDD
-# @export
-#
-# @param jrdd Java object reference to the backing JavaRDD
-# @param serializedMode Use "byte" if the RDD stores data serialized in R, "string" if the RDD
-# stores strings, and "row" if the RDD stores the rows of a DataFrame
-# @param isCached TRUE if the RDD is cached
-# @param isCheckpointed TRUE if the RDD has been checkpointed
+#' construct RDD
+#'
+#' @param jrdd Java object reference to the backing JavaRDD
+#' @param serializedMode Use "byte" if the RDD stores data serialized in R, "string" if the RDD
+#'          stores strings, and "row" if the RDD stores the rows of a DataFrame
+#' @param isCached TRUE if the RDD is cached
+#' @param isCheckpointed TRUE if the RDD has been checkpointed
+#' @export
 RDD <- function(jrdd, serializedMode = "byte", isCached = FALSE,
                 isCheckpointed = FALSE) {
   new("RDD", jrdd, serializedMode, isCached, isCheckpointed)
 }
 
+#' PipelinedRDD
+#'
+#' @param prev prev RDD
+#' @param func function
+#' @return PipelinedRDD
+#' @export
 PipelinedRDD <- function(prev, func) {
   new("PipelinedRDD", prev, func, NULL)
 }
 
-# Return the serialization mode for an RDD.
+#' Return the serialization mode for an RDD.
+#' @exportMethod getSerializedMode
 setGeneric("getSerializedMode", function(rdd, ...) { standardGeneric("getSerializedMode") })
-# For normal RDDs we can directly read the serializedMode
+
+#' For normal RDDs we can directly read the serializedMode
+#' @aliases getSerializedMode, RDD-method
 setMethod("getSerializedMode", signature(rdd = "RDD"), function(rdd) rdd@env$serializedMode )
-# For pipelined RDDs if jrdd_val is set then serializedMode should exist
-# if not we return the defaultSerialization mode of "byte" as we don't know the serialization
-# mode at this point in time.
+
+
+#' For pipelined RDDs if jrdd_val is set then serializedMode should exist
+#' if not we return the defaultSerialization mode of "byte" as we don't know the serialization
+#' mode at this point in time.
+#' @aliases getSerializedMode, PipelinedRDD-method
 setMethod("getSerializedMode", signature(rdd = "PipelinedRDD"),
           function(rdd) {
             if (!is.null(rdd@env$jrdd_val)) {
@@ -200,19 +213,19 @@ setValidity("RDD",
 
 ############ Actions and Transformations ############
 
-# Persist an RDD
-#
-# Persist this RDD with the default storage level (MEMORY_ONLY).
-#
-# @param x The RDD to cache
-# @examples
-#\dontrun{
-# sc <- sparkR.init()
-# rdd <- parallelize(sc, 1:10, 2L)
-# cache(rdd)
-#}
-# @rdname cache-methods
-# @aliases cache,RDD-method
+#' Persist an RDD
+#'
+#' Persist this RDD with the default storage level (MEMORY_ONLY).
+#'
+#' @param x The RDD to cache
+#' @examples
+#'\dontrun{
+#' sc <- sparkR.init()
+#' rdd <- parallelize(sc, 1:10, 2L)
+#' cache(rdd)
+#'}
+#' @rdname cache-methods
+#' @aliases cache,RDD-method
 setMethod("cache",
           signature(x = "RDD"),
           function(x) {
@@ -221,22 +234,22 @@ setMethod("cache",
             x
           })
 
-# Persist an RDD
-#
-# Persist this RDD with the specified storage level. For details of the
-# supported storage levels, refer to
-# http://spark.apache.org/docs/latest/programming-guide.html#rdd-persistence.
-#
-# @param x The RDD to persist
-# @param newLevel The new storage level to be assigned
-# @examples
-#\dontrun{
-# sc <- sparkR.init()
-# rdd <- parallelize(sc, 1:10, 2L)
-# persist(rdd, "MEMORY_AND_DISK")
-#}
-# @rdname persist
-# @aliases persist,RDD-method
+#' Persist an RDD
+#'
+#' Persist this RDD with the specified storage level. For details of the
+#' supported storage levels, refer to
+#' http://spark.apache.org/docs/latest/programming-guide.html#rdd-persistence.
+#'
+#' @param x The RDD to persist
+#' @param newLevel The new storage level to be assigned
+#' @examples
+#'\dontrun{
+#' sc <- sparkR.init()
+#' rdd <- parallelize(sc, 1:10, 2L)
+#' persist(rdd, "MEMORY_AND_DISK")
+#'}
+#' @rdname persist
+#' @aliases persist,RDD-method
 setMethod("persist",
           signature(x = "RDD", newLevel = "character"),
           function(x, newLevel = "MEMORY_ONLY") {

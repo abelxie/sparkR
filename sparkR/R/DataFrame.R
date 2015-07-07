@@ -20,6 +20,14 @@
 #' @include generics.R jobj.R schema.R RDD.R pairRDD.R column.R group.R
 NULL
 
+#' jobj class
+#'
+#' The S3 class jobj exported using setOldClass to a S4 class
+#'
+#' @name jobj-class
+#' @aliases jobj-class
+#'
+#' @exportClass jobj
 setOldClass("jobj")
 
 #' @title S4 class that represents a DataFrame
@@ -28,9 +36,9 @@ setOldClass("jobj")
 #' @rdname DataFrame
 #' @seealso jsonFile, table
 #'
-#' @param env An R environment that stores bookkeeping states of the DataFrame
-#' @param sdf A Java object reference to the backing Scala DataFrame
-#' @export
+#' @slot env An R environment that stores bookkeeping states of the DataFrame
+#' @slot sdf A Java object reference to the backing Scala DataFrame
+#' @exportClass DataFrame
 setClass("DataFrame",
          slots = list(env = "environment",
                       sdf = "jobj"))
@@ -44,10 +52,10 @@ setMethod("initialize", "DataFrame", function(.Object, sdf, isCached) {
 })
 
 #' @rdname DataFrame
-#' @export
 #'
 #' @param sdf A Java object reference to the backing Scala DataFrame
 #' @param isCached TRUE if the dataFrame is cached
+#' @export
 dataFrame <- function(sdf, isCached = FALSE) {
   new("DataFrame", sdf, isCached)
 }
@@ -58,18 +66,18 @@ dataFrame <- function(sdf, isCached = FALSE) {
 #'
 #' Prints out the schema in tree format
 #'
-#' @param x A SparkSQL DataFrame
-#'
 #' @rdname printSchema
-#' @export
+#' @aliases printSchema,DataFrame-method
+#' @param x DataFrame
+#' @return NULL
 #' @examples
-#'\dontrun{
-#' sc <- sparkR.init()
-#' sqlContext <- sparkRSQL.init(sc)
-#' path <- "path/to/file.json"
-#' df <- jsonFile(sqlContext, path)
-#' printSchema(df)
-#'}
+#' \dontrun{
+#'  sc <- sparkR.init()
+#'  sqlContext <- sparkRSQL.init(sc)
+#'  path <- "path/to/file.json"
+#'  df <- jsonFile(sqlContext, path)
+#'  printSchema(df)
+#' }
 setMethod("printSchema",
           signature(x = "DataFrame"),
           function(x) {
@@ -84,7 +92,7 @@ setMethod("printSchema",
 #' @param x A SparkSQL DataFrame
 #'
 #' @rdname schema
-#' @export
+#' @aliases schema,DataFrame-method
 #' @examples
 #'\dontrun{
 #' sc <- sparkR.init()
@@ -106,7 +114,7 @@ setMethod("schema",
 #' @param x A SparkSQL DataFrame
 #' @param extended Logical. If extended is False, explain() only prints the physical plan.
 #' @rdname explain
-#' @export
+#' @aliases explain,DataFrame-method
 #' @examples
 #'\dontrun{
 #' sc <- sparkR.init()
@@ -135,7 +143,7 @@ setMethod("explain",
 #' @param x A SparkSQL DataFrame
 #'
 #' @rdname isLocal
-#' @export
+#' @aliases isLocal,DataFrame-method
 #' @examples
 #'\dontrun{
 #' sc <- sparkR.init()
@@ -158,7 +166,7 @@ setMethod("isLocal",
 #' @param numRows The number of rows to print. Defaults to 20.
 #'
 #' @rdname showDF
-#' @export
+#' @aliases showDF,DataFrame-method
 #' @examples
 #'\dontrun{
 #' sc <- sparkR.init()
@@ -181,7 +189,7 @@ setMethod("showDF",
 #' @param x A SparkSQL DataFrame
 #'
 #' @rdname show
-#' @export
+#' @aliases show,DataFrame-method
 #' @examples
 #'\dontrun{
 #' sc <- sparkR.init()
@@ -206,7 +214,7 @@ setMethod("show", "DataFrame",
 #' @param x A SparkSQL DataFrame
 #'
 #' @rdname dtypes
-#' @export
+#' @aliases dtypes,DataFrame-method
 #' @examples
 #'\dontrun{
 #' sc <- sparkR.init()
@@ -230,7 +238,7 @@ setMethod("dtypes",
 #' @param x A SparkSQL DataFrame
 #'
 #' @rdname columns
-#' @export
+#' @aliases columns,DataFrame-method
 #' @examples
 #'\dontrun{
 #' sc <- sparkR.init()
@@ -248,7 +256,9 @@ setMethod("columns",
           })
 
 #' @rdname columns
-#' @aliases names,DataFrame,function-method
+#'
+#' @param x DataFrame
+#' @aliases names,DataFrame-method
 setMethod("names",
           signature(x = "DataFrame"),
           function(x) {
@@ -263,7 +273,7 @@ setMethod("names",
 #' @param tableName A character vector containing the name of the table
 #'
 #' @rdname registerTempTable
-#' @export
+#' @aliases registerTempTable,DataFrame-method
 #' @examples
 #'\dontrun{
 #' sc <- sparkR.init()
@@ -289,7 +299,7 @@ setMethod("registerTempTable",
 #' the existing rows in the table.
 #'
 #' @rdname insertInto
-#' @export
+#' @aliases insertInto,DataFrame-method
 #' @examples
 #'\dontrun{
 #' sc <- sparkR.init()
@@ -312,7 +322,7 @@ setMethod("insertInto",
 #' @param x A SparkSQL DataFrame
 #'
 #' @rdname cache-methods
-#' @export
+#' @aliases cache,DataFrame-method
 #' @examples
 #'\dontrun{
 #' sc <- sparkR.init()
@@ -333,11 +343,11 @@ setMethod("cache",
 #'
 #' Persist this DataFrame with the specified storage level. For details of the
 #' supported storage levels, refer to
-#' http://spark.apache.org/docs/latest/programming-guide.html#rdd-persistence.
+#'  \url{http://spark.apache.org/docs/latest/programming-guide.html#rdd-persistence}.
 #'
 #' @param x The DataFrame to persist
 #' @rdname persist
-#' @export
+#' @aliases persist,DataFrame-method
 #' @examples
 #'\dontrun{
 #' sc <- sparkR.init()

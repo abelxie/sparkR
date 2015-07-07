@@ -47,7 +47,13 @@ getJobj <- function(objId) {
   newObj
 }
 
-# Handler for a java object that exists on the backend.
+#' Handler for a java object that exists on the backend.
+#'
+#' @name jobj
+#' @rdname jobj
+#' @param objId object id
+#' @return jobj instance
+#' @export
 jobj <- function(objId) {
   if (!is.character(objId)) {
     stop("object id must be a character")
@@ -71,6 +77,7 @@ jobj <- function(objId) {
 #'
 #' @param x The JVM object reference
 #' @param ... further arguments passed to or from other methods
+#' @method print jobj
 print.jobj <- function(x, ...) {
   cls <- callJMethod(x, "getClass")
   name <- callJMethod(cls, "getName")
