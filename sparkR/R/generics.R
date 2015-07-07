@@ -406,10 +406,11 @@ setGeneric("dropna",
 
 #' @rdname nafunctions
 #' @exportMethod na.omit
-setGeneric("na.omit",
-           function(x, how = c("any", "all"), minNonNulls = NULL, cols = NULL) {
-             standardGeneric("na.omit")
-           })
+setGeneric('na.omit')
+# setGeneric("na.omit",
+#           function(x, how = c("any", "all"), minNonNulls = NULL, cols = NULL) {
+#             standardGeneric("na.omit")
+#           })
 
 #' @rdname schema
 #' @exportMethod dtypes
@@ -427,8 +428,9 @@ setGeneric("except", function(x, y) { standardGeneric("except") })
 #' @exportMethod fillna
 setGeneric("fillna", function(x, value, cols = NULL) { standardGeneric("fillna") })
 
-#' @rdname filter
-#' @exportMethod filter
+# We dont export it as stats::filter , use where instead
+# @rdname filter
+# @exportMethod filter
 setGeneric("filter", function(x, condition) { standardGeneric("filter") })
 
 #' @rdname groupBy
@@ -445,7 +447,8 @@ setGeneric("insertInto", function(x, tableName, ...) { standardGeneric("insertIn
 
 #' @rdname intersect
 #' @exportMethod intersect
-setGeneric("intersect", function(x, y) { standardGeneric("intersect") })
+setGeneric('intersect')
+#setGeneric("intersect", function(x, y) { standardGeneric("intersect") })
 
 #' @rdname isLocal
 #' @exportMethod isLocal
@@ -475,12 +478,11 @@ setGeneric("rename", function(x, ...) { standardGeneric("rename") })
 #' @exportMethod registerTempTable
 setGeneric("registerTempTable", function(x, tableName) { standardGeneric("registerTempTable") })
 
-#' @rdname sample
-#' @exportMethod sample
-setGeneric("sample",
-           function(x, withReplacement, fraction, seed) {
-             standardGeneric("sample")
-           })
+# dont export, use sample_frac instead
+# @rdname sample
+# @exportMethod sample
+setGeneric("sample", function(x, withReplacement, fraction, seed) { standardGeneric("sample") })
+
 
 #' @rdname sample
 #' @exportMethod sample_frac

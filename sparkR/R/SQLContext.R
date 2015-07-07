@@ -285,7 +285,7 @@ sql <- function(sqlContext, sqlQuery) {
 #' @param sqlContext SQLContext to use
 #' @param tableName The SparkSQL Table to convert to a DataFrame.
 #' @return DataFrame
-#' @export
+#  @export 
 #' @examples
 #'\dontrun{
 #' sc <- sparkR.init()

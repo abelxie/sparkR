@@ -43,6 +43,7 @@ setClass("DataFrame",
          slots = list(env = "environment",
                       sdf = "jobj"))
 
+#' @aliases initialize DataFrame-method
 setMethod("initialize", "DataFrame", function(.Object, sdf, isCached) {
   .Object@env <- new.env()
   .Object@env$isCached <- isCached
@@ -497,7 +498,7 @@ setMethod("distinct",
 #' @param fraction The (rough) sample target fraction
 #' @return DataFrame of sampled rows
 #' @rdname sample
-#' @aliases sample_frac DataFrame-method
+#' @aliases sample DataFrame-method
 #' @examples
 #'\dontrun{
 #' sc <- sparkR.init()
@@ -522,6 +523,7 @@ setMethod("sample",
 #'
 #' wrapper for \code{sample}
 #'
+#' @seealso sample
 #' @rdname sample
 #' @return DataFrame
 #' @aliases sample_frac DataFrame-method
@@ -715,6 +717,7 @@ setMethod("toRDD",
 #' Groups the DataFrame using the specified columns, so we can run aggregation on them.
 #'
 #' @param x a DataFrame
+#' @param ... columns
 #' @return a GroupedData
 #' @seealso GroupedData
 #' @aliases groupBy DataFrame-method
@@ -754,15 +757,19 @@ setMethod("group_by",
 #'
 #' @param x a DataFrame
 #' @rdname DataFrame
-#' @aliases summarize
+#' @aliases summarize agg DataFrame-method
 setMethod("agg",
           signature(x = "DataFrame"),
           function(x, ...) {
             agg(groupBy(x), ...)
           })
 
+#' summarize
+#' 
+#' alias of \code{agg}
+#'
 #' @rdname DataFrame
-#' @aliases agg
+#' @aliases summarize agg DataFrame-method
 setMethod("summarize",
           signature(x = "DataFrame"),
           function(x, ...) {
@@ -777,6 +784,7 @@ setMethod("summarize",
 ###################################################################################
 
 # @rdname lapply
+#' @aliases lapply DataFrame-method
 setMethod("lapply",
           signature(X = "DataFrame", FUN = "function"),
           function(X, FUN) {
@@ -785,6 +793,7 @@ setMethod("lapply",
           })
 
 # @rdname lapply
+#' @aliases map DataFrame-method
 setMethod("map",
           signature(X = "DataFrame", FUN = "function"),
           function(X, FUN) {
@@ -792,6 +801,7 @@ setMethod("map",
           })
 
 # @rdname flatMap
+#' @aliases flatMap DataFrame-method
 setMethod("flatMap",
           signature(X = "DataFrame", FUN = "function"),
           function(X, FUN) {
@@ -800,6 +810,7 @@ setMethod("flatMap",
           })
 
 # @rdname lapplyPartition
+#' @aliases lapplyPartition DataFrame-method
 setMethod("lapplyPartition",
           signature(X = "DataFrame", FUN = "function"),
           function(X, FUN) {
@@ -808,6 +819,7 @@ setMethod("lapplyPartition",
           })
 
 # @rdname lapplyPartition
+#' @aliases mapPartitions DataFrame-method
 setMethod("mapPartitions",
           signature(X = "DataFrame", FUN = "function"),
           function(X, FUN) {
@@ -815,6 +827,7 @@ setMethod("mapPartitions",
           })
 
 # @rdname foreach
+#' @aliases foreach DataFrame-method
 setMethod("foreach",
           signature(x = "DataFrame", func = "function"),
           function(x, func) {
@@ -823,6 +836,7 @@ setMethod("foreach",
           })
 
 # @rdname foreach
+#' @aliases foreachPartition DataFrame-method
 setMethod("foreachPartition",
           signature(x = "DataFrame", func = "function"),
           function(x, func) {
@@ -838,12 +852,14 @@ getColumn <- function(x, c) {
 }
 
 #' @rdname select
+#' @aliases '$.DataFrame'
 setMethod("$", signature(x = "DataFrame"),
           function(x, name) {
             getColumn(x, name)
           })
 
 #' @rdname select
+#' @aliases '$<-.DataFrame'
 setMethod("$<-", signature(x = "DataFrame"),
           function(x, name, value) {
             stopifnot(class(value) == "Column" || is.null(value))
@@ -871,6 +887,7 @@ setMethod("$<-", signature(x = "DataFrame"),
           })
 
 #' @rdname select
+#' @aliases '[[.DataFrame'
 setMethod("[[", signature(x = "DataFrame"),
           function(x, i) {
             if (is.numeric(i)) {
@@ -881,6 +898,7 @@ setMethod("[[", signature(x = "DataFrame"),
           })
 
 #' @rdname select
+#' @aliases '[.DataFrame'
 setMethod("[", signature(x = "DataFrame", i = "missing"),
           function(x, i, j, ...) {
             if (is.numeric(j)) {
@@ -1156,12 +1174,12 @@ setMethod("orderBy",
 #' @aliases filter DataFrame-method
 #' @examples
 #'\dontrun{
-#' sc <- sparkR.init()
-#' sqlContext <- sparkRSQL.init(sc)
-#' path <- "path/to/file.json"
-#' df <- jsonFile(sqlContext, path)
-#' filter(df, "col1 > 0")
-#' filter(df, df$col2 != "abcdefg")
+#'  sc <- sparkR.init()
+#'  sqlContext <- sparkRSQL.init(sc)
+#'  path <- "path/to/file.json"
+#'  df <- jsonFile(sqlContext, path)
+#'  filter(df, "col1 > 0")
+#'  filter(df, df$col2 != "abcdefg")
 #' }
 setMethod("filter",
           signature(x = "DataFrame", condition = "characterOrColumn"),
@@ -1492,9 +1510,9 @@ setMethod("dropna",
 
 #' @aliases na.omit dropna DataFrame-method
 setMethod("na.omit",
-          signature(x = "DataFrame"),
-          function(x, how = c("any", "all"), minNonNulls = NULL, cols = NULL) {
-            dropna(x, how, minNonNulls, cols)
+          signature(object = "DataFrame"),
+          function(object, how = c("any", "all"), minNonNulls = NULL, cols = NULL) {
+            dropna(object, how, minNonNulls, cols)
           })
 
 #' fillna
