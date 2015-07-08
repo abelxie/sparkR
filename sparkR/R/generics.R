@@ -15,6 +15,11 @@
 # limitations under the License.
 #
 
+# Convert R S3 to Generic
+
+#' @exportMethod head
+setGeneric('head')
+
 ############ RDD Actions and Transformations ############
 
 # @rdname aggregateRDD
@@ -558,6 +563,9 @@ setGeneric("withColumnRenamed", function(x, existingCol, newCol) {
 
 
 ###################### Column Methods ##########################
+
+#' @exportMethod mean
+setGeneric('mean')
 
 #' @exportMethod substr
 setGeneric('substr')
