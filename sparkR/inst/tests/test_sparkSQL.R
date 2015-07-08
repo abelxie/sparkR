@@ -52,9 +52,10 @@ test_that("infer types", {
                list(type = 'array', elementType = "integer", containsNull = TRUE))
   expect_equal(infer_type(list(1L, 2L)),
                list(type = 'array', elementType = "integer", containsNull = TRUE))
-  expect_equal(infer_type(list(a = 1L, b = "2")),
+  expect_equal(SparkR:::callJMethod(infer_type(list(a = 1L, b = "2"))$jobj,'toString'),
+               SparkR:::callJMethod(
                structType(structField(x = "a", type = "integer", nullable = TRUE),
-                          structField(x = "b", type = "string", nullable = TRUE)))
+                          structField(x = "b", type = "string", nullable = TRUE))$jobj, 'toString'))
   e <- new.env()
   assign("a", 1L, envir = e)
   expect_equal(infer_type(e),

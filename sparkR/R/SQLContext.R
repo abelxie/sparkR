@@ -18,6 +18,9 @@
 # SQLcontext.R: SQLContext-driven functions
 
 #' infer the SQL type
+#' @param x atomic types or complex types
+#' @return list of type or structType object
+#' @export
 infer_type <- function(x) {
   if (is.null(x)) {
     stop("can not infer type from NULL")
@@ -150,24 +153,25 @@ createDataFrame <- function(sqlContext, data, schema = NULL, samplingRatio = 1.0
   dataFrame(sdf)
 }
 
-# toDF
-#
-# Converts an RDD to a DataFrame by infer the types.
-#
-# @param x An RDD
-#
-# @rdname DataFrame
-# @export
-# @examples
-#\dontrun{
-# sc <- sparkR.init()
-# sqlContext <- sparkRSQL.init(sc)
-# rdd <- lapply(parallelize(sc, 1:10), function(x) list(a=x, b=as.character(x)))
-# df <- toDF(rdd)
-# }
-
+#' toDF
+#'
+#' Converts an RDD to a DataFrame by infer the types.
+#'
+#' @param x An RDD
+#' @param ... other parameters
+#' @rdname DataFrame
+#' @exportMethod toDF
+#' @examples
+#' \dontrun{
+#'     sc <- sparkR.init()
+#'     sqlContext <- sparkRSQL.init(sc)
+#'     rdd <- lapply(parallelize(sc, 1:10), function(x) list(a=x, b=as.character(x)))
+#'     df <- toDF(rdd)
+#' }
 setGeneric("toDF", function(x, ...) { standardGeneric("toDF") })
 
+#' toDF
+#' @aliases toDF RDD-method
 setMethod("toDF", signature(x = "RDD"),
           function(x, ...) {
             sqlContext <- if (exists(".sparkRHivesc", envir = .sparkREnv)) {
@@ -207,26 +211,25 @@ jsonFile <- function(sqlContext, path) {
 }
 
 
-# JSON RDD
-#
-# Loads an RDD storing one JSON object per string as a DataFrame.
-#
-# @param sqlContext SQLContext to use
-# @param rdd An RDD of JSON string
-# @param schema A StructType object to use as schema
-# @param samplingRatio The ratio of simpling used to infer the schema
-# @return A DataFrame
-# @export
-# @examples
-#\dontrun{
-# sc <- sparkR.init()
-# sqlContext <- sparkRSQL.init(sc)
-# rdd <- texFile(sc, "path/to/json")
-# df <- jsonRDD(sqlContext, rdd)
-# }
-
-# TODO: support schema
+#' JSON RDD
+#'
+#' Loads an RDD storing one JSON object per string as a DataFrame.
+#'
+#' @param sqlContext SQLContext to use
+#' @param rdd An RDD of JSON string
+#' @param schema A StructType object to use as schema
+#' @param samplingRatio The ratio of simpling used to infer the schema
+#' @return A DataFrame
+#' @export
+#' @examples
+#'    \dontrun{
+#'         sc <- sparkR.init()
+#'         sqlContext <- sparkRSQL.init(sc)
+#'         rdd <- texFile(sc, "path/to/json")
+#'         df <- jsonRDD(sqlContext, rdd)
+#'     }
 jsonRDD <- function(sqlContext, rdd, schema = NULL, samplingRatio = 1.0) {
+# TODO: support schema
   rdd <- serializeToString(rdd)
   if (is.null(schema)) {
     sdf <- callJMethod(sqlContext, "jsonRDD", callJMethod(getJRDD(rdd), "rdd"), samplingRatio)
@@ -235,7 +238,6 @@ jsonRDD <- function(sqlContext, rdd, schema = NULL, samplingRatio = 1.0) {
     stop("not implemented")
   }
 }
-
 
 #' Create a DataFrame from a Parquet file.
 #'
@@ -285,15 +287,14 @@ sql <- function(sqlContext, sqlQuery) {
 #' @param sqlContext SQLContext to use
 #' @param tableName The SparkSQL Table to convert to a DataFrame.
 #' @return DataFrame
-#  @export 
 #' @examples
-#'\dontrun{
-#' sc <- sparkR.init()
-#' sqlContext <- sparkRSQL.init(sc)
-#' path <- "path/to/file.json"
-#' df <- jsonFile(sqlContext, path)
-#' registerTempTable(df, "table")
-#' new_df <- table(sqlContext, "table")
+#' \dontrun{
+#'     sc <- sparkR.init()
+#'     sqlContext <- sparkRSQL.init(sc)
+#'     path <- "path/to/file.json"
+#'     df <- jsonFile(sqlContext, path)
+#'     registerTempTable(df, "table")
+#'     new_df <- table(sqlContext, "table")
 #' }
 
 table <- function(sqlContext, tableName) {
@@ -400,6 +401,7 @@ uncacheTable <- function(sqlContext, tableName) {
 #' Removes all cached tables from the in-memory cache.
 #'
 #' @param sqlContext SQLContext to use
+#' @export
 #' @examples
 #' \dontrun{
 #' clearCache(sqlContext)
@@ -416,6 +418,7 @@ clearCache <- function(sqlContext) {
 #'
 #' @param sqlContext SQLContext to use
 #' @param tableName The name of the SparkSQL table to be dropped.
+#' @export
 #' @examples
 #' \dontrun{
 #' sc <- sparkR.init()

@@ -39,6 +39,9 @@ structType <- function(x, ...) {
   UseMethod("structType", x)
 }
 
+#' structType.jobj
+#' @export
+#' @method structType jobj
 structType.jobj <- function(x) {
   obj <- structure(list(), class = "structType")
   obj$jobj <- x
@@ -46,6 +49,9 @@ structType.jobj <- function(x) {
   obj
 }
 
+#' structType.structField
+#' @export
+#' @method structType structField
 structType.structField <- function(x, ...) {
   fields <- list(x, ...)
   if (!all(sapply(fields, inherits, "structField"))) {
@@ -67,6 +73,7 @@ structType.structField <- function(x, ...) {
 #'
 #' @param x A StructType object
 #' @param ... further arguments passed to or from other methods
+#' @method print structType
 print.structType <- function(x, ...) {
   cat("StructType\n",
       sapply(x$fields(), function(field) { paste("|-", "name = \"", field$name(),
@@ -95,11 +102,13 @@ print.structType <- function(x, ...) {
 #' schema <- structType(field1, field2)
 #' df <- createDataFrame(sqlCtx, rdd, schema)
 #' }
-
 structField <- function(x, ...) {
   UseMethod("structField", x)
 }
 
+#' structField.jobj
+#' @export
+#' @method structField jobj
 structField.jobj <- function(x) {
   obj <- structure(list(), class = "structField")
   obj$jobj <- x
@@ -111,6 +120,9 @@ structField.jobj <- function(x) {
   obj
 }
 
+#' structField.character
+#' @export
+#' @method structField character
 structField.character <- function(x, type, nullable = TRUE) {
   if (class(x) != "character") {
     stop("Field name must be a string.")
@@ -153,6 +165,7 @@ structField.character <- function(x, type, nullable = TRUE) {
 #'
 #' @param x A StructField object
 #' @param ... further arguments passed to or from other methods
+#' @method print structField
 print.structField <- function(x, ...) {
   cat("StructField(name = \"", x$name(),
       "\", type = \"", x$dataType.toString(),

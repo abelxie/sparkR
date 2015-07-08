@@ -27,25 +27,33 @@ setOldClass("jobj")
 
 #' @rdname column
 #'
-#' @param jc reference to JVM DataFrame column
-#' @export
+#' @slot jc reference to JVM DataFrame column
+#' @exportClass Column
 setClass("Column",
          slots = list(jc = "jobj"))
 
+#' @aliases initialize Column-method
 setMethod("initialize", "Column", function(.Object, jc) {
   .Object@jc <- jc
   .Object
 })
 
+#' column
+#' constructor
+#' @param jc jobj refer id
 column <- function(jc) {
   new("Column", jc)
 }
 
+#' col
+#' What's this?
+#' @param x R object
 col <- function(x) {
   column(callJStatic("org.apache.spark.sql.functions", "col", x))
 }
 
 #' @rdname show
+#' @aliases show Column-method
 setMethod("show", "Column",
           function(object) {
             cat("Column", callJMethod(object@jc, "toString"), "\n")
@@ -181,6 +189,7 @@ setMethod("alias",
 #'
 #' @param start starting position
 #' @param stop ending position
+#' @aliases substr Column-method
 setMethod("substr", signature(x = "Column"),
           function(x, start, stop) {
             jc <- callJMethod(x@jc, "substr", as.integer(start - 1), as.integer(stop - start + 1))
@@ -190,12 +199,13 @@ setMethod("substr", signature(x = "Column"),
 #' Casts the column to a different data type.
 #'
 #' @rdname column
-#'
+#' @param x Column
 #' @examples
 #' \dontrun{
 #'   cast(df$age, "string")
 #'   cast(df$name, list(type="array", elementType="byte", containsNull = TRUE))
 #' }
+#' @aliases cast Column-method
 setMethod("cast",
           signature(x = "Column"),
           function(x, dataType) {
@@ -218,6 +228,7 @@ setMethod("cast",
 #'   filter(df, "age in (10, 30)")
 #'   where(df, df$age %in% c(10, 30))
 #' }
+#' @aliases '%in%' Column-method
 setMethod("%in%",
           signature(x = "Column"),
           function(x, table) {
@@ -230,6 +241,7 @@ setMethod("%in%",
 #'
 #' @rdname column
 #' @return the approximate number of distinct items in a group.
+#' @aliases approxCountDistinct Column-method
 setMethod("approxCountDistinct",
           signature(x = "Column"),
           function(x, rsd = 0.95) {
@@ -241,6 +253,7 @@ setMethod("approxCountDistinct",
 #'
 #' @rdname column
 #' @return the number of distinct items in a group.
+#' @aliases countDistinct Column-method
 setMethod("countDistinct",
           signature(x = "Column"),
           function(x, ...) {
@@ -253,7 +266,7 @@ setMethod("countDistinct",
           })
 
 #' @rdname column
-#' @aliases countDistinct
+#' @aliases n_distinct countDistinct Column-method
 setMethod("n_distinct",
           signature(x = "Column"),
           function(x, ...) {
@@ -261,7 +274,7 @@ setMethod("n_distinct",
           })
 
 #' @rdname column
-#' @aliases count
+#' @aliases n count Column-method
 setMethod("n",
           signature(x = "Column"),
           function(x) {

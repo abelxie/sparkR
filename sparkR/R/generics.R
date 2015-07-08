@@ -559,6 +559,12 @@ setGeneric("withColumnRenamed", function(x, existingCol, newCol) {
 
 ###################### Column Methods ##########################
 
+#' @exportMethod substr
+setGeneric('substr')
+
+#' @exportMethod %in%
+setGeneric('%in%')
+
 #' @rdname column
 #' @exportMethod approxCountDistinct
 setGeneric("approxCountDistinct", function(x, ...) { standardGeneric("approxCountDistinct") })
