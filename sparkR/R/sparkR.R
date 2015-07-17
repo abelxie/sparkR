@@ -21,8 +21,11 @@ sparkR.onLoad <- function(libname, pkgname) {
   .sparkREnv$libname <- libname
 }
 
-# Utility function that returns TRUE if we have an active connection to the
-# backend and FALSE otherwise
+#' Utility function that returns TRUE if we have an active connection to the
+#' backend and FALSE otherwise
+#'
+#' @param env sparkEnv
+#' @return logical
 connExists <- function(env) {
   tryCatch({
     exists(".sparkRCon", envir = env) && isOpen(env[[".sparkRCon"]])
@@ -34,6 +37,7 @@ connExists <- function(env) {
 #' Stop the Spark context.
 #'
 #' Also terminates the backend this R session is connected to
+#' @export
 sparkR.stop <- function() {
   env <- .sparkREnv
   if (exists(".sparkRCon", envir = env)) {
@@ -82,17 +86,17 @@ sparkR.stop <- function() {
 #' @param sparkJars Character string vector of jar files to pass to the worker nodes.
 #' @param sparkRLibDir The path where R is installed on the worker nodes.
 #' @param sparkPackages Character string vector of packages from spark-packages.org
-#' @export
 #' @examples
-#'\dontrun{
-#' sc <- sparkR.init("local[2]", "SparkR", "/home/spark")
-#' sc <- sparkR.init("local[2]", "SparkR", "/home/spark",
-#'                  list(spark.executor.memory="1g"))
-#' sc <- sparkR.init("yarn-client", "SparkR", "/home/spark",
-#'                  list(spark.executor.memory="1g"),
-#'                  list(LD_LIBRARY_PATH="/directory of JVM libraries (libjvm.so) on workers/"),
-#'                  c("jarfile1.jar","jarfile2.jar"))
-#'}
+#'    \dontrun{
+#'     sc <- sparkR.init("local[2]", "SparkR", "/home/spark")
+#'     sc <- sparkR.init("local[2]", "SparkR", "/home/spark",
+#'                      list(spark.executor.memory="1g"))
+#'     sc <- sparkR.init("yarn-client", "SparkR", "/home/spark",
+#'                      list(spark.executor.memory="1g"),
+#'                      list(LD_LIBRARY_PATH="/directory of JVM libraries (libjvm.so) on workers/"),
+#'                      c("jarfile1.jar","jarfile2.jar"))
+#'    }
+#' @export
 
 sparkR.init <- function(
   master = "",
@@ -221,13 +225,12 @@ sparkR.init <- function(
 #' then uses it to initialize a new SQLContext
 #'
 #' @param jsc The existing JavaSparkContext created with SparkR.init()
-#' @export
 #' @examples
-#'\dontrun{
-#' sc <- sparkR.init()
-#' sqlContext <- sparkRSQL.init(sc)
-#'}
-
+#'    \dontrun{
+#'     sc <- sparkR.init()
+#'     sqlContext <- sparkRSQL.init(sc)
+#'    }
+#' @export
 sparkRSQL.init <- function(jsc = NULL) {
   if (exists(".sparkRSQLsc", envir = .sparkREnv)) {
     return(get(".sparkRSQLsc", envir = .sparkREnv))
@@ -252,12 +255,12 @@ sparkRSQL.init <- function(jsc = NULL) {
 #' This function creates a HiveContext from an existing JavaSparkContext
 #'
 #' @param jsc The existing JavaSparkContext created with SparkR.init()
-#' @export
 #' @examples
-#'\dontrun{
-#' sc <- sparkR.init()
-#' sqlContext <- sparkRHive.init(sc)
-#'}
+#'    \dontrun{
+#'     sc <- sparkR.init()
+#'     sqlContext <- sparkRHive.init(sc)
+#'    }
+#' @export
 
 sparkRHive.init <- function(jsc = NULL) {
   if (exists(".sparkRHivesc", envir = .sparkREnv)) {
@@ -290,10 +293,11 @@ sparkRHive.init <- function(jsc = NULL) {
 #' @param description description for the the job group ID
 #' @param interruptOnCancel flag to indicate if the job is interrupted on job cancellation
 #' @examples
-#'\dontrun{
-#' sc <- sparkR.init()
-#' setJobGroup(sc, "myJobGroup", "My job group description", TRUE)
-#'}
+#'    \dontrun{
+#'     sc <- sparkR.init()
+#'     setJobGroup(sc, "myJobGroup", "My job group description", TRUE)
+#'    }
+#' @export
 
 setJobGroup <- function(sc, groupId, description, interruptOnCancel) {
   callJMethod(sc, "setJobGroup", groupId, description, interruptOnCancel)
@@ -307,6 +311,7 @@ setJobGroup <- function(sc, groupId, description, interruptOnCancel) {
 #' sc <- sparkR.init()
 #' clearJobGroup(sc)
 #'}
+#' @export
 
 clearJobGroup <- function(sc) {
   callJMethod(sc, "clearJobGroup")
@@ -317,10 +322,11 @@ clearJobGroup <- function(sc) {
 #' @param sc existing spark context
 #' @param groupId the ID of job group to be cancelled
 #' @examples
-#'\dontrun{
-#' sc <- sparkR.init()
-#' cancelJobGroup(sc, "myJobGroup")
-#'}
+#'  \dontrun{
+#'      sc <- sparkR.init()
+#'      cancelJobGroup(sc, "myJobGroup")
+#' }
+#' @export
 
 cancelJobGroup <- function(sc, groupId) {
   callJMethod(sc, "cancelJobGroup", groupId)
