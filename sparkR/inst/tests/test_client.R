@@ -15,19 +15,18 @@
 # limitations under the License.
 #
 
-.First <- function() {
-  home <- Sys.getenv("SPARK_HOME")
-  .libPaths(c(file.path(home, "R", "lib"), .libPaths()))
-  Sys.setenv(NOAWT=1)
+context("functions in client.R")
 
-  # Make sure SparkR package is the last loaded one
-  old <- getOption("defaultPackages")
-  options(defaultPackages = c(old, "SparkR"))
+test_that("adding spark-testing-base as a package works", {
+  args <- generateSparkSubmitArgs("", "", "", "",
+                                  "holdenk:spark-testing-base:1.3.0_0.0.5")
+  expect_equal(gsub("[[:space:]]", "", args),
+               gsub("[[:space:]]", "",
+                    "--packages holdenk:spark-testing-base:1.3.0_0.0.5"))
+})
 
-  sc <- SparkR::sparkR.init()
-  assign("sc", sc, envir=.GlobalEnv)
-  sqlContext <- SparkR::sparkRSQL.init(sc)
-  assign("sqlContext", sqlContext, envir=.GlobalEnv)
-  cat("\n Welcome to SparkR!")
-  cat("\n Spark context is available as sc, SQL context is available as sqlContext\n")
-}
+test_that("no package specified doesn't add packages flag", {
+  args <- generateSparkSubmitArgs("", "", "", "", "")
+  expect_equal(gsub("[[:space:]]", "", args),
+               "")
+})

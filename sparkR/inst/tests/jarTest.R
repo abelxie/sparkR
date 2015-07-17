@@ -14,20 +14,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+library(SparkR)
 
-.First <- function() {
-  home <- Sys.getenv("SPARK_HOME")
-  .libPaths(c(file.path(home, "R", "lib"), .libPaths()))
-  Sys.setenv(NOAWT=1)
+sc <- sparkR.init()
 
-  # Make sure SparkR package is the last loaded one
-  old <- getOption("defaultPackages")
-  options(defaultPackages = c(old, "SparkR"))
+helloTest <- SparkR:::callJStatic("sparkR.test.hello",
+                                  "helloWorld",
+                                  "Dave")
 
-  sc <- SparkR::sparkR.init()
-  assign("sc", sc, envir=.GlobalEnv)
-  sqlContext <- SparkR::sparkRSQL.init(sc)
-  assign("sqlContext", sqlContext, envir=.GlobalEnv)
-  cat("\n Welcome to SparkR!")
-  cat("\n Spark context is available as sc, SQL context is available as sqlContext\n")
-}
+basicFunction <- SparkR:::callJStatic("sparkR.test.basicFunction",
+                                      "addStuff",
+                                      2L,
+                                      2L)
+
+sparkR.stop()
+output <- c(helloTest, basicFunction)
+writeLines(output)

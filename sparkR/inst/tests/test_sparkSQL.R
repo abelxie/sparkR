@@ -19,6 +19,14 @@ library(testthat)
 
 context("SparkSQL functions")
 
+# Utility function for easily checking the values of a StructField
+checkStructField <- function(actual, expectedName, expectedType, expectedNullable) {
+  expect_equal(class(actual), "structField")
+  expect_equal(actual$name(), expectedName)
+  expect_equal(actual$dataType.toString(), expectedType)
+  expect_equal(actual$nullable(), expectedNullable)
+}
+
 # Tests for SparkSQL functions in SparkR
 
 sc <- sparkR.init()
@@ -52,10 +60,10 @@ test_that("infer types", {
                list(type = 'array', elementType = "integer", containsNull = TRUE))
   expect_equal(infer_type(list(1L, 2L)),
                list(type = 'array', elementType = "integer", containsNull = TRUE))
-  expect_equal(SparkR:::callJMethod(infer_type(list(a = 1L, b = "2"))$jobj,'toString'),
-               SparkR:::callJMethod(
-               structType(structField(x = "a", type = "integer", nullable = TRUE),
-                          structField(x = "b", type = "string", nullable = TRUE))$jobj, 'toString'))
+  testStruct <- infer_type(list(a = 1L, b = "2"))
+  expect_true(class(testStruct) == "structType")
+  checkStructField(testStruct$fields()[[1]], "a", "IntegerType", TRUE)
+  checkStructField(testStruct$fields()[[2]], "b", "StringType", TRUE)
   e <- new.env()
   assign("a", 1L, envir = e)
   expect_equal(infer_type(e),
@@ -694,7 +702,6 @@ test_that("filter() on a DataFrame", {
   filtered2 <- where(df, df$name != "Michael")
   expect_true(count(filtered2) == 2)
   expect_true(collect(filtered2)$age[2] == 19)
-
   # test suites for %in%
   filtered3 <- filter(df, "age in (19)")
   expect_equal(count(filtered3), 1)
