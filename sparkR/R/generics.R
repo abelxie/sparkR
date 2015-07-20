@@ -104,6 +104,9 @@ setGeneric("glom", function(x) { standardGeneric("glom") })
 #' @exportMethod keyBy
 setGeneric("keyBy", function(x, func) { standardGeneric("keyBy") })
 
+#' @exportMethod lapply
+setGeneric('lapply')
+
 # @rdname lapplyPartition
 #' @exportMethod lapplyPartition
 setGeneric("lapplyPartition", function(X, FUN) { standardGeneric("lapplyPartition") })

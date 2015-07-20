@@ -145,6 +145,8 @@ parallelize <- function(sc, coll, numSlices = 1) {
 #' NOTE: The package is assumed to be installed on every node in the Spark
 #' cluster.
 #'
+#' NOTE: pkg should only contain one string, without quote
+#'
 #' @param sc SparkContext to use
 #' @param pkg Package name
 #'
@@ -171,8 +173,31 @@ includePackage <- function(sc, pkg) {
   } else {
     packages <- list()
   }
-  packages <- c(packages, pkg)
+  packages <- unique(c(packages, pkg))
+  packages <- packages[ packages!='' ]
   .sparkREnv$.packages <- packages
+}
+
+#' resetPackage
+#'
+#' reset the intenal R package list to pkgs
+#'
+#' @param sc SparkContext
+#' @param pkgs the characters of package names to reset to
+#' @return old package list
+resetPackage = function(sc, pkgs=NULL) {
+  if (exists(".packages", .sparkREnv)) {
+    packages <- .sparkREnv$.packages
+  } else {
+    packages <- list()
+  }
+  packages
+  if (is.null(pkgs)) {
+      .sparkREnv$.packages = NULL
+  } else {
+      .sparkREnv$.packages <- as.list(pkgs)
+  }
+  packages
 }
 
 #' @title Broadcast a variable to all workers
