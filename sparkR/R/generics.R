@@ -298,10 +298,9 @@ setGeneric("aggregateByKey",
 # @rdname cogroup
 #' @exportMethod cogroup
 setGeneric("cogroup",
-           function(..., numPartitions) {
+           function(x, ..., numPartitions = 2L) {
              standardGeneric("cogroup")
-           },
-           signature = "...")
+           })
 
 # @rdname combineByKey
 #' @seealso groupByKey, reduceByKey
